@@ -73,3 +73,35 @@ Iré subiendo aquí todo mi código, ejercicios y pruebas a medida que avance en
 >*hora = st.time_input("texto a mostrar")* -> Selecciona una hora y minutos.
 
 >*color = st.color_picker("texto a mostrar")* -> Selecciona un color.
+
+# Personalización
+> *st.set_page_config(page_title="nombre que querramos")* -> Sirve para cambiarle el a la pestaña. Va antes de cualquier función.
+
+> *st.set_page_config(page_icon="img")* -> Sirve para poner un icono personalizado en la pestaña. Para esto necesitamos importar from PIL import Image -> img = Image.open("logo.png")
+
+>*st.set_page_config(layout="wide")* -> Hace que la página sea mas ancha.
+
+>*st.sidebar.header/write("texto")* -> Sirve para tener una barra lateral desplegable.
+
+>*st.set_page_config(initial_sidebar_state="collapsed")* -> Hace que la barra desplegable esté contraida cuando se carga la página.
+
+# Plotly
+> Sirve para crear gráficos y esas cosas de estadística.
+> Para usar esta libreria tenemos que instalarla con el pip install.
+> A continuación voy a simplemente colocar el fragmento de código porque no soy de usar mucho esto. Antes que nada hay que importar pandas
+
+  import plotly.express as px
+  import pandas as pd
+
+  df = pd.read_csv("nombre del csv)
+  st.dataframe(df)
+
+  df_count = df.groupby('Gender').count().reset_index() -> Nuevo df
+  fig = px.pie(df_count, values="EmpID", names="Gender", title="Género") -> gráfico de torta, por eso "pie".
+
+  st.plotly_chart(fig) -> mostramos
+
+  df_avg = df.groupby('Dept')['Stress'].mean().reset_index()
+  fig2 = px.bar(df_avg, x:"Dept", y:"Stress", color="Dept")
+
+  st.plotly_chart(fig2)
