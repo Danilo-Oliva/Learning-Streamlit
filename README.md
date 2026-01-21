@@ -85,6 +85,12 @@ Iré subiendo aquí todo mi código, ejercicios y pruebas a medida que avance en
 
 >*st.set_page_config(initial_sidebar_state="collapsed")* -> Hace que la barra desplegable esté contraida cuando se carga la página.
 
+>*st.sidebar.selectbox("nombre del menu", variable que contiene la lista con las opciones)* -> Sirve para agregar opciones a la sidebar
+  menu = ["imagenes", "conjunto de datos", "archivos de documentos" ]
+  eleccion = st.sidebar.selectbox("Menu", menu)
+
+> Podemos usar if == eleccion para que se vaya cambiando de paginas
+
 # Plotly
 > Sirve para crear gráficos y esas cosas de estadística.
 > Para usar esta libreria tenemos que instalarla con el pip install.
@@ -105,3 +111,55 @@ Iré subiendo aquí todo mi código, ejercicios y pruebas a medida que avance en
   fig2 = px.bar(df_avg, x:"Dept", y:"Stress", color="Dept")
 
   st.plotly_chart(fig2)
+
+# Carga de archivos
+> Instalar libreria docx2txt y PyPDF2 (importar PdfReader)
+> *@st.cache_data* -> Es un decorador que permite almacenar en cache las cosas así no deben cargar varias veces lo mismo.
+
+> *PdfReader(file)* -> Nos permite leer pdf, para contar cuantas páginas tiene usamos count = len(pdfReader.pages)
+
+def leer_pdf(file):
+  pdfReader = PdfReader(file)
+  count = len(pdfReader.pages)
+  todo_el_texto = ""
+  
+  for i in range(count):
+    pagina = pdfReader.pages[i]
+    todo_el_texto += pagina.extract_text()
+    
+  return todo_el_texto
+
+> Lo que se hace es que pdfReader obtiene cada paginas en una lista. Por eso se obtiene el tamaño de las paginas, en la primera iteracion se obtiene la primera página y asi sucesivamente. Luego se concatena todo en una misma variable. Luego concatena todo el texto de una página con la anterior.
+
+> *archivo_imagen = st.file_uploader("texto a mostrar", type=["png", "jpg", "jpeg"])* -> Sirve para subir imagenes, al cargar no a a mostrar los detalles, por eso usaremos un diccionario
+  detalles_archivo = {
+    "nombre_archivo": archivo_imagen.name,
+    "tipo_archivo": archivo_imagen.type,
+    "tamaño_archivo": archivo_imagen.size
+  }
+> Para mostrar esto primero usamos este fragmento arriba de la creacion del diccionario 
+  if archivo_imagen is not None:
+    detalles_archivos = {...}
+
+>*st.image(cargar_imagen(archivo_imagen), width=250)* -> sirve para mostrar la imagen como tal.
+
+>*cargar csv o excel* -> Es lo mismo que imagenes, incluso el if is not none, solo cambia el type=["csv", "xlsx"]
+>Para mostrar esto cambia un poco, primero para mostrar un archivo con coma(csv) hay que hacer:
+  if detalles_archivo["tipo_archivo"] == "text/csv":
+    df = pd.read_csv(archivo_datos)
+
+>y para un xlsx es:
+  elif detalles_archivo["tipo_archivo] == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    df = pd.read_excel(archivo_datos)
+
+> al final ponemos *st.dataframe(df)* sin identar así lo hace cualquiera que sea su tipo de archivo pero para que no salte error, hacemos
+  else:
+    df = pd.DataFrame()
+
+> *cargar documentos* -> se usa lo mismo, solo cambia el type=["pdf","docx", "txt"]. Además agregaremos un botón con *st.button("Procesar")*
+
+>Para mostrar los documentos hacemos el if correspondiente y un *str(archivo_doc.read(), "utf-8")*
+  if detalles_archivo["tipo_archivo"] == "text/plain":
+    texto = str(archivo_doc.read(), "utf-8")
+            
+    st.write(texto)
